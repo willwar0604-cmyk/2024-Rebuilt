@@ -76,21 +76,21 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    double dashboardRPM =
-        SmartDashboard.getNumber("Shooter/Shooter RPM", ShooterConstants.SHOOTER_RPM);
-    ShooterConstants.SHOOTER_RPM = Math.round(dashboardRPM);
+    ShooterConstants.SHOOTER_RPM =
+        Math.round(SmartDashboard.getNumber("Shooter/Shooter RPM", ShooterConstants.SHOOTER_RPM));
 
-    double dashboardP =
+    ShooterConstants.shooterkP =
         SmartDashboard.getNumber("Shooter/Shooter PID/kP", ShooterConstants.shooterkP);
-    double dashboardI =
+    ShooterConstants.shooterkI =
         SmartDashboard.getNumber("Shooter/Shooter PID/kI", ShooterConstants.shooterkI);
-    double dashboardD =
+    ShooterConstants.shooterkD =
         SmartDashboard.getNumber("Shooter/Shooter PID/kD", ShooterConstants.shooterkD);
-    double dashboardFFkV =
+    ShooterConstants.shooterFFkV =
         SmartDashboard.getNumber("Shooter/Shooter PID/FFkV", ShooterConstants.shooterFFkV);
-    ShooterConstants.shooterkP = dashboardP;
-    ShooterConstants.shooterkD = dashboardD;
-    ShooterConstants.shooterkI = dashboardI;
-    ShooterConstants.shooterFFkV = dashboardFFkV;
+
+    SmartDashboard.putNumber(
+        "Shooter/Shooter Current RPM/Top RPM", topShooter.getEncoder().getVelocity());
+    SmartDashboard.putNumber(
+        "Shooter/Shooter Current RPM/Bottom RPM", bottomShooter.getEncoder().getVelocity());
   }
 }

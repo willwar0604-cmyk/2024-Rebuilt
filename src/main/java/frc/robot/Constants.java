@@ -3,7 +3,6 @@ package frc.robot;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Constants {
   public static final Mode simMode = Mode.SIM;
@@ -26,6 +25,12 @@ public class Constants {
 
   public final class TiltConstants {
     public static final int TILT = 44;
+
+    public static double tiltkP = 0.02;
+    public static double tiltkI = 0.0001;
+    public static double tiltkD = 0.00001;
+
+    public static final double TILT_ANGLE_OFFSET = -25;
   }
 
   public final class ShooterConstants {
@@ -45,6 +50,7 @@ public class Constants {
     public static double shooterkP = 0.0001;
     public static double shooterkI = 0.0;
     public static double shooterkD = 0.0;
+
     public static double shooterFFkV = 0.22; // what ReCalc gave me
   }
 
@@ -67,7 +73,10 @@ public class Constants {
   // vision still needs to be added
   public final class VisionConstants {
     public static AprilTagFieldLayout aprilTagLayout =
-        AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+        AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+
+    public static final double FIELD_WIDTH = 16.541;
+    public static final double FIELD_HEIGHT = 8.069;
 
     // Basic filtering thresholds
     public static final double MAX_AMBIGUITY = 0.2;
@@ -86,36 +95,6 @@ public class Constants {
     public static double linearStdDevMegatag2Factor = 0.5; // More stable than full 3D solve
     public static double angularStdDevMegatag2Factor =
         Double.POSITIVE_INFINITY; // No rotation data available
-  }
-
-  public static class DashboardConstants {
-    public static double tiltkP = 0.01;
-    public static double tiltkI = 0.0;
-    public static double tiltkD = 0.0;
-    public static double tiltFFkS = 0.0;
-    public static double tiltFFkV = 0.0;
-    public static double tiltFFkCos = 0.0;
-
-    public static void initDashboard() {
-      // tilt PID values
-      SmartDashboard.putNumber("Tilt/Tilt PID/kP", tiltkP);
-      SmartDashboard.putNumber("Tilt/Tilt PID/kI", tiltkI);
-      SmartDashboard.putNumber("Tilt/Tilt PID/kD", tiltkD);
-
-      // tilt feedforward values
-      SmartDashboard.putNumber("Tilt/Tilt FF/kS", tiltFFkS);
-      SmartDashboard.putNumber("Tilt/Tilt FF/kV", tiltFFkV);
-      SmartDashboard.putNumber("Tilt/Tilt FF/kCos", tiltFFkCos);
-    }
-
-    public static void updateFromDashboard() {
-      tiltkP = SmartDashboard.getNumber("Tilt/Tilt PID/kP", tiltkP);
-      tiltkI = SmartDashboard.getNumber("Tilt/Tilt PID/kI", tiltkI);
-      tiltkD = SmartDashboard.getNumber("Tilt/Tilt PID/kD", tiltkD);
-      tiltFFkS = SmartDashboard.getNumber("Tilt/Tilt FF/kS", tiltFFkS);
-      tiltFFkV = SmartDashboard.getNumber("Tilt/Tilt FF/kV", tiltFFkV);
-      tiltFFkCos = SmartDashboard.getNumber("Tilt/Tilt FF/kCos", tiltFFkCos);
-    }
   }
 
   public static enum Mode {

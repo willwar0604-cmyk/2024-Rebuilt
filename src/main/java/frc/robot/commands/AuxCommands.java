@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.aux.*;
 
@@ -42,5 +43,9 @@ public class AuxCommands extends SubsystemBase {
   public void shootFalse() {
     loadingDrum.drumStop();
     shooter.shooterStop();
+  }
+
+  public Command autoIntakeTrue() {
+    return run(this::intakeTrue);
   }
 }
