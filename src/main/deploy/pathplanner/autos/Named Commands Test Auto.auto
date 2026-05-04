@@ -11,21 +11,21 @@
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "Path 1"
+            "waitTime": 0.5
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Path 2"
+            "name": "Intake Off"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.25
+            "waitTime": 0.5
           }
         },
         {
@@ -43,13 +43,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot Off"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Path 3"
+            "name": "Intake Off"
           }
         }
       ]

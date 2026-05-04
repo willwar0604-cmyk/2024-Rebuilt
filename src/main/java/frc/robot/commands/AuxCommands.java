@@ -48,4 +48,16 @@ public class AuxCommands extends SubsystemBase {
   public Command autoIntakeTrue() {
     return run(this::intakeTrue);
   }
+
+  public Command autoIntakeFalse() {
+    return run(this::intakeFalse);
+  }
+
+  public Command autoShootTrue() {
+    return run(this::shootTrue);
+  }
+
+  public Command autoShootFalse() {
+    return run(this::shootFalse);
+  }
 }

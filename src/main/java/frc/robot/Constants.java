@@ -8,7 +8,7 @@ public class Constants {
   public static final Mode simMode = Mode.SIM;
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
-  public static double MAX_SPEED = 10;
+  public static double MAX_SPEED = 5.2;
   public static double NathanSpeed = 2.0;
   public static final double TILT_ANGLE_OFFSET = -25;
   public static final double APRIL_TAG_OFFSET = 1.01237005816;
@@ -26,11 +26,11 @@ public class Constants {
   public final class TiltConstants {
     public static final int TILT = 44;
 
-    public static double tiltkP = 0.02;
-    public static double tiltkI = 0.0001;
-    public static double tiltkD = 0.00001;
+    public static double tiltkP = 0.0; // og nathan value
+    public static double tiltkI = 0.0; // og nathan value
+    public static double tiltkD = 0.0; // og nathan value
 
-    public static final double TILT_ANGLE_OFFSET = -25;
+    // og nathan FF was 0.0001
   }
 
   public final class ShooterConstants {
@@ -38,19 +38,17 @@ public class Constants {
     public static final int BOTTOM_SHOOTER = 41;
 
     public static double SHOOTER_RPM = 60;
+    // !! IMPORTANT!!
+    // CTRE PID units and REVLib PID units differ significantly
+    // REV kP = CTRE kP / 1000 (roughly)
+    // kI and kD start and 0 and retune
+    // CTRE kF is typically around 1:1 with REV kV / kA
 
-    // Shooter PID tuning - start with these values and adjust on dashboard
-    // kP: Proportional gain - increase if response is slow, decrease if oscillating
-    // kI: Integral gain - helps eliminate steady-state error (usually 0 or very small)
-    // kD: Derivative gain - adds damping to prevent overshoot
-    // FFkV: velocity gain - critical for velocity control, roughly 12V / max_rpm
-    // FFkS: static gain - overcome static friction, smallest output that starts movement decreased
-    // until mechanism holds still
-    // FFkCos: cosine (arm) gravity gain - compensation for gravity in a rotary mechanism
-    public static double shooterkP = 0.0001;
-    public static double shooterkI = 0.0;
-    public static double shooterkD = 0.0;
+    public static double shooterkP = 0.0006; // og nathan value
+    public static double shooterkI = 0.000001; // og nathan value
+    public static double shooterkD = 0.0000015; // og nathan value
 
+    // og nathan FF was just 0
     public static double shooterFFkV = 0.22; // what ReCalc gave me
   }
 

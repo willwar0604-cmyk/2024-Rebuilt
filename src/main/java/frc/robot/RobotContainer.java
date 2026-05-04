@@ -9,7 +9,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -17,6 +16,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.*;
 import frc.robot.commands.*;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.aux.*;
@@ -109,7 +109,11 @@ public class RobotContainer {
         break;
     }
 
+    // Pathplanner named commands
     NamedCommands.registerCommand("Intake On", AuxSystem.autoIntakeTrue());
+    NamedCommands.registerCommand("Intake Off", AuxSystem.autoIntakeFalse());
+    NamedCommands.registerCommand("Shoot On", AuxSystem.autoShootTrue());
+    NamedCommands.registerCommand("Shoot Off", AuxSystem.autoShootFalse());
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -182,6 +186,9 @@ public class RobotContainer {
     controller
         .rightTrigger()
         .whileTrue(Commands.startEnd(() -> AuxSystem.shootTrue(), () -> AuxSystem.shootFalse()));
+
+    // Sets the tilt angle with left bumper
+    controller.leftBumper().onTrue(tilt.setTiltAngleCommand());
   }
 
   /**
@@ -190,6 +197,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new PathFindToStart(new PathPlannerAuto(autoChooser.get().getName()));
+    return autoChooser.get();
   }
 }
