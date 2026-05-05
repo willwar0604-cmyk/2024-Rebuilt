@@ -107,7 +107,7 @@ public class RobotContainer {
     // Pathplanner named commands
     NamedCommands.registerCommand("Intake", subsystem.intake());
     NamedCommands.registerCommand("Shoot", subsystem.shoot());
-    NamedCommands.registerCommand("Subsystem Stop", subsystem.end());
+    NamedCommands.registerCommand("Stop All", subsystem.end());
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());

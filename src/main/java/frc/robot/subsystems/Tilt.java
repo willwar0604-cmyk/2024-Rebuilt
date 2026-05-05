@@ -18,7 +18,7 @@ public class Tilt extends SubsystemBase {
   SparkClosedLoopController tiltController = tilt.getClosedLoopController();
 
   public double targetAngle = 190.0;
-  public double currentAngle =  tilt.getEncoder().getPosition() * 360;
+  public double currentAngle = tilt.getEncoder().getPosition() * 360;
 
   public static double P = 0.02;
   public static double I = 0.0;
@@ -37,18 +37,20 @@ public class Tilt extends SubsystemBase {
 
     tiltConfig
         .closedLoop
-          .p(P).i(I).d(D)
+        .p(P)
+        .i(I)
+        .d(D)
         .maxMotion
-          .cruiseVelocity(100)
-          .maxAcceleration(200)
-          .allowedProfileError(0.5);
+        .cruiseVelocity(100)
+        .maxAcceleration(200)
+        .allowedProfileError(0.5);
 
     tiltConfig
         .softLimit
-          .forwardSoftLimit(degreesToRotations(220.0))
-          .forwardSoftLimitEnabled(true)
-          .reverseSoftLimit(degreesToRotations(190.0))
-          .reverseSoftLimitEnabled(true);
+        .forwardSoftLimit(degreesToRotations(220.0))
+        .forwardSoftLimitEnabled(true)
+        .reverseSoftLimit(degreesToRotations(190.0))
+        .reverseSoftLimitEnabled(true);
 
     tilt.configure(tiltConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }

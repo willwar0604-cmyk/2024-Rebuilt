@@ -36,12 +36,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter/Shooter PID/FFkV", V);
 
     SparkFlexConfig shooterConfig = new SparkFlexConfig();
-    shooterConfig
-        .idleMode(IdleMode.kBrake)
-        .closedLoop
-          .p(P).i(I).d(D)
-        .feedForward
-          .kS(S).kV(V);
+    shooterConfig.idleMode(IdleMode.kBrake).closedLoop.p(P).i(I).d(D).feedForward.kS(S).kV(V);
 
     topShooter.configure(
         shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
