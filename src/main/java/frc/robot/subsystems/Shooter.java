@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
@@ -40,13 +39,9 @@ public class Shooter extends SubsystemBase {
     shooterConfig
         .idleMode(IdleMode.kBrake)
         .closedLoop
-        .p(P)
-        .i(I)
-        .d(D)
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+          .p(P).i(I).d(D)
         .feedForward
-        .kS(S)
-        .kV(V);
+          .kS(S).kV(V);
 
     topShooter.configure(
         shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -71,7 +66,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean isUpToSpeed() {
-    return Math.abs(topShooter.getEncoder().getVelocity() - SHOOTER_RPM) < 100;
+    return Math.abs(topShooter.getEncoder().getVelocity() - SHOOTER_RPM) <= 50;
   }
 
   @Override

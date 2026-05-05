@@ -18,7 +18,9 @@ public class Tilt extends SubsystemBase {
   SparkClosedLoopController tiltController = tilt.getClosedLoopController();
 
   public double targetAngle = 190.0;
-  public static double P = 0.0;
+  public double currentAngle =  tilt.getEncoder().getPosition() * 360;
+
+  public static double P = 0.02;
   public static double I = 0.0;
   public static double D = 0.0;
 
@@ -33,18 +35,20 @@ public class Tilt extends SubsystemBase {
     SparkMaxConfig tiltConfig = new SparkMaxConfig();
     tiltConfig.idleMode(IdleMode.kCoast);
 
-    tiltConfig.closedLoop.p(P).i(I).d(D).outputRange(-1, 1);
-    // .maxMotion
-    // .cruiseVelocity(100)
-    // .maxAcceleration(200)
-    // .allowedProfileError(0.5);
+    tiltConfig
+        .closedLoop
+          .p(P).i(I).d(D)
+        .maxMotion
+          .cruiseVelocity(100)
+          .maxAcceleration(200)
+          .allowedProfileError(0.5);
 
     tiltConfig
         .softLimit
-        .forwardSoftLimit(degreesToRotations(220.0))
-        .forwardSoftLimitEnabled(true)
-        .reverseSoftLimit(degreesToRotations(190.0))
-        .reverseSoftLimitEnabled(true);
+          .forwardSoftLimit(degreesToRotations(220.0))
+          .forwardSoftLimitEnabled(true)
+          .reverseSoftLimit(degreesToRotations(190.0))
+          .reverseSoftLimitEnabled(true);
 
     tilt.configure(tiltConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
@@ -58,14 +62,14 @@ public class Tilt extends SubsystemBase {
   }
 
   public void increaseTiltAngle() {
-    if (Math.abs((tilt.getEncoder().getPosition() * 360) - targetAngle) > 10) {
+    if (Math.abs(currentAngle - targetAngle) > 10) {
       targetAngle += 1.0;
     }
     tiltController.setSetpoint(degreesToRotations(targetAngle), ControlType.kPosition);
   }
 
   public void decreaseTiltAngle() {
-    if (Math.abs((tilt.getEncoder().getPosition() * 360) - targetAngle) > 10) {
+    if (Math.abs(currentAngle - targetAngle) > 10) {
       targetAngle -= 1.0;
     }
     tiltController.setSetpoint(degreesToRotations(targetAngle), ControlType.kPosition);
@@ -77,7 +81,7 @@ public class Tilt extends SubsystemBase {
     I = SmartDashboard.getNumber("Tilt/Tilt PID/kI", I);
     D = SmartDashboard.getNumber("Tilt/Tilt PID/kD", D);
 
-    targetAngle = SmartDashboard.getNumber("Tilt/Tilt Target", targetAngle);
-    SmartDashboard.putNumber("Tilt/Tilt Current", tilt.getEncoder().getPosition() * 360.0);
+    targetAngle = SmartDashboard.getNumber("Tilt/Tilt Target Angle", targetAngle);
+    SmartDashboard.putNumber("Tilt/Tilt Current Angle", currentAngle);
   }
 }

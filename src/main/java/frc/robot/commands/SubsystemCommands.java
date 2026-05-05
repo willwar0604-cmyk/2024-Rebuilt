@@ -17,15 +17,15 @@ public class SubsystemCommands extends SubsystemBase {
     this.shooter = shooter;
   }
 
-//   For some reason i have a hunch the sensor output is gonna be opposite of what i want
-// 
-//   public boolean irSensorFlip(boolean status) {
-//     if (irSensor.get()) {
-//         return status = false;
-//     } else {
-//         return status = true;
-//     }
-//   }
+  //   For some reason i have a hunch the sensor output is gonna be opposite of what i want
+  //
+  //   public boolean irSensorFlip(boolean status) {
+  //     if (irSensor.get()) {
+  //         return status = false;
+  //     } else {
+  //         return status = true;
+  //     }
+  //   }
 
   public Command waitForLoad() {
     return new ParallelCommandGroup(intake.stop(), shooter.spinUp().onlyIf(() -> irSensor.get()));
