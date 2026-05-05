@@ -179,7 +179,7 @@ public class RobotContainer {
     controller.rightTrigger().whileTrue(subsystem.shoot());
 
     // Sets the tilt angle with right bumper to the current value of targetAngle
-    controller.rightBumper().whileTrue(Commands.runOnce(tilt::setTiltAngle));
+    controller.rightBumper().onTrue(Commands.runOnce(tilt::setTiltAngle));
 
     // increase the tilt angle with d-pad up
     controller.povUp().whileTrue(Commands.run(tilt::increaseTiltAngle));
