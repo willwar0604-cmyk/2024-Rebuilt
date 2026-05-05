@@ -177,13 +177,13 @@ public class RobotContainer {
     // Intakes with left trigger
     controller
         .leftTrigger()
-        .whileTrue(
+        .onTrue(
           Commands.run(auxSystem::intakeSystemRun));
 
     // Stops intake with left bumper 
     controller
         .leftBumper() 
-        .whileTrue(
+        .onTrue(
           Commands.runOnce(auxSystem::intakeSystemStop));
 
     // Shoots with right trigger
