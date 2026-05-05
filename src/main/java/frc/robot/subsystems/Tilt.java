@@ -60,21 +60,23 @@ public class Tilt extends SubsystemBase {
   }
 
   public void setTiltAngle() {
-    tiltController.setSetpoint(degreesToRotations(targetAngle), ControlType.kPosition);
+    if ((targetAngle > 190) || (targetAngle < 220)) {
+      tiltController.setSetpoint(degreesToRotations(targetAngle), ControlType.kPosition);
+    }
   }
 
   public void increaseTiltAngle() {
     if (Math.abs(currentAngle - targetAngle) > 10) {
       targetAngle += 1.0;
     }
-    tiltController.setSetpoint(degreesToRotations(targetAngle), ControlType.kPosition);
+    setTiltAngle();
   }
 
   public void decreaseTiltAngle() {
     if (Math.abs(currentAngle - targetAngle) > 10) {
       targetAngle -= 1.0;
     }
-    tiltController.setSetpoint(degreesToRotations(targetAngle), ControlType.kPosition);
+    setTiltAngle();
   }
 
   @Override
