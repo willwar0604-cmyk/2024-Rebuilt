@@ -1,4 +1,4 @@
-package frc.robot.subsystems.aux;
+package frc.robot.subsystems;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
@@ -10,36 +10,34 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.*;
+import frc.robot.Constants;
 
 public class Tilt extends SubsystemBase {
-  SparkMax tilt = new SparkMax(TiltConstants.TILT, MotorType.kBrushless);
+  SparkMax tilt = new SparkMax(Constants.TILT, MotorType.kBrushless);
 
   SparkClosedLoopController tiltController = tilt.getClosedLoopController();
 
   public double targetAngle = 190.0;
+  public static double P = 0.0;
+  public static double I = 0.0;
+  public static double D = 0.0;
 
   public Tilt() {
     // tilt PID values
-    SmartDashboard.putNumber("Tilt/Tilt PID/kP", TiltConstants.tiltkP);
-    SmartDashboard.putNumber("Tilt/Tilt PID/kI", TiltConstants.tiltkI);
-    SmartDashboard.putNumber("Tilt/Tilt PID/kD", TiltConstants.tiltkD);
+    SmartDashboard.putNumber("Tilt/Tilt PID/kP", P);
+    SmartDashboard.putNumber("Tilt/Tilt PID/kI", I);
+    SmartDashboard.putNumber("Tilt/Tilt PID/kD", D);
 
     SmartDashboard.putNumber("Tilt/Tilt Target", targetAngle);
 
     SparkMaxConfig tiltConfig = new SparkMaxConfig();
     tiltConfig.idleMode(IdleMode.kCoast);
 
-    tiltConfig
-        .closedLoop
-        .p(TiltConstants.tiltkP)
-        .i(TiltConstants.tiltkI)
-        .d(TiltConstants.tiltkD)
-        .outputRange(-1, 1);
-        // .maxMotion
-        // .cruiseVelocity(100)
-        // .maxAcceleration(200)
-        // .allowedProfileError(0.5);
+    tiltConfig.closedLoop.p(P).i(I).d(D).outputRange(-1, 1);
+    // .maxMotion
+    // .cruiseVelocity(100)
+    // .maxAcceleration(200)
+    // .allowedProfileError(0.5);
 
     tiltConfig
         .softLimit
@@ -75,9 +73,9 @@ public class Tilt extends SubsystemBase {
 
   @Override
   public void periodic() {
-    TiltConstants.tiltkP = SmartDashboard.getNumber("Tilt/Tilt PID/kP", TiltConstants.tiltkP);
-    TiltConstants.tiltkI = SmartDashboard.getNumber("Tilt/Tilt PID/kI", TiltConstants.tiltkI);
-    TiltConstants.tiltkD = SmartDashboard.getNumber("Tilt/Tilt PID/kD", TiltConstants.tiltkD);
+    P = SmartDashboard.getNumber("Tilt/Tilt PID/kP", P);
+    I = SmartDashboard.getNumber("Tilt/Tilt PID/kI", I);
+    D = SmartDashboard.getNumber("Tilt/Tilt PID/kD", D);
 
     targetAngle = SmartDashboard.getNumber("Tilt/Tilt Target", targetAngle);
     SmartDashboard.putNumber("Tilt/Tilt Current", tilt.getEncoder().getPosition() * 360.0);

@@ -13,87 +13,50 @@ public class Constants {
   public static final double TILT_ANGLE_OFFSET = -25;
   public static final double APRIL_TAG_OFFSET = 1.01237005816;
 
-  public final class IntakeConstants {
-    public static final int GROUND_PICKUP = 52;
-    public static final int RIGHT_HOTWHEEL = 53;
-    public static final int LEFT_HOTWHEEL = 54;
-  }
+  public static final int GROUND_PICKUP = 52;
+  public static final int RIGHT_HOTWHEEL = 53;
+  public static final int LEFT_HOTWHEEL = 54;
+  public static final int LOADING_DRUM = 43;
 
-  public final class DrumConstants {
-    public static final int LOADING_DRUM = 43;
-  }
+  public static final int TILT = 44;
 
-  public final class TiltConstants {
-    public static final int TILT = 44;
+  public static final int TOP_SHOOTER = 42;
+  public static final int BOTTOM_SHOOTER = 41;
 
-    public static double tiltkP = 0.0; // og nathan value
-    public static double tiltkI = 0.0; // og nathan value
-    public static double tiltkD = 0.0; // og nathan value
+  public static final int RETIRED_CLIMB_A = 61;
+  public static final int RETIRED_CLIMB_B = 62;
 
-    // og nathan FF was 0.0001
-  }
+  public static final int DRIVER_CONTROLLER_PORT = 0;
+  public static final int OPERATOR_CONTROLLER_PORT = 1;
 
-  public final class ShooterConstants {
-    public static final int TOP_SHOOTER = 42;
-    public static final int BOTTOM_SHOOTER = 41;
-
-    public static double SHOOTER_RPM = 60;
-    // !! IMPORTANT!!
-    // CTRE PID units and REVLib PID units differ significantly
-    // REV kP = CTRE kP / 1000 (roughly)
-    // kI and kD start and 0 and retune
-    // CTRE kF is typically around 1:1 with REV kV / kA
-
-    public static double shooterkP = 0.0006; // og nathan value
-    public static double shooterkI = 0.000001; // og nathan value
-    public static double shooterkD = 0.0000015; // og nathan value
-
-    // og nathan FF was just 0
-    public static double shooterFFkV = 0.22; // what ReCalc gave me
-  }
-
-  public final class ClimbConstants {
-    public static final int RETIRED_CLIMB_A = 61;
-    public static final int RETIRED_CLIMB_B = 62;
-  }
-
-  public final class ControllerConstants {
-    public static final int DRIVER_CONTROLLER_PORT = 0;
-    public static final int OPERATOR_CONTROLLER_PORT = 1;
-  }
-
-  public final class PowerConstants {
-    public static final double INTAKE_POWER = 0.8;
-    public static final double DRUM_POWER = 0.7;
-    public static final double MAX_TILT_POWER = 1;
-  }
+  public static final double INTAKE_POWER = 0.8;
+  public static final double DRUM_POWER = 0.7;
+  public static final double MAX_TILT_POWER = 1;
 
   // vision still needs to be added
-  public final class VisionConstants {
-    public static AprilTagFieldLayout aprilTagLayout =
-        AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+  public static AprilTagFieldLayout aprilTagLayout =
+      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
 
-    public static final double FIELD_WIDTH = 16.541;
-    public static final double FIELD_HEIGHT = 8.069;
+  public static final double FIELD_WIDTH = 16.541;
+  public static final double FIELD_HEIGHT = 8.069;
 
-    // Basic filtering thresholds
-    public static final double MAX_AMBIGUITY = 0.2;
-    public static final double MAX_Z_ERROR = 0.2;
+  // Basic filtering thresholds
+  public static final double MAX_AMBIGUITY = 0.2;
+  public static final double MAX_Z_ERROR = 0.2;
 
-    // Standard deviation baselines, for 1 meter distance and 1 tag
-    // (Adjusted automatically based on distance and # of tags)
-    public static double linearStdDevBaseline = 0.02; // Meters
-    public static double angularStdDevBaseline = 0.03; // Radians
+  // Standard deviation baselines, for 1 meter distance and 1 tag
+  // (Adjusted automatically based on distance and # of tags)
+  public static double linearStdDevBaseline = 0.02; // Meters
+  public static double angularStdDevBaseline = 0.03; // Radians
 
-    // Standard deviation multipliers for each camera
-    // (Adjust to trust some cameras more than others)
-    public static double[] cameraStdDevFactors = new double[] {1.0};
+  // Standard deviation multipliers for each camera
+  // (Adjust to trust some cameras more than others)
+  public static double[] cameraStdDevFactors = new double[] {1.0};
 
-    // Multipliers to apply for MegaTag 2 observations
-    public static double linearStdDevMegatag2Factor = 0.5; // More stable than full 3D solve
-    public static double angularStdDevMegatag2Factor =
-        Double.POSITIVE_INFINITY; // No rotation data available
-  }
+  // Multipliers to apply for MegaTag 2 observations
+  public static double linearStdDevMegatag2Factor = 0.5; // More stable than full 3D solve
+  public static double angularStdDevMegatag2Factor =
+      Double.POSITIVE_INFINITY; // No rotation data available
 
   public static enum Mode {
     REAL,

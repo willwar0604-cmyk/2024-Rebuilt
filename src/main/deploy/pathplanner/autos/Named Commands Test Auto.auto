@@ -7,7 +7,19 @@
         {
           "type": "named",
           "data": {
-            "name": "Intake Run"
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {
@@ -19,31 +31,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Intake Stop"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot Run"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake Stop"
+            "name": "Subsystem Stop"
           }
         }
       ]
