@@ -24,11 +24,11 @@ public class LoadingDrum extends SubsystemBase {
         drumConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  public void drumRun() {
+  public void drumOn() {
     loadingDrum.set(PowerConstants.DRUM_POWER);
   }
 
-  public void drumStop() {
+  public void drumOff() {
     loadingDrum.set(0);
   }
 }

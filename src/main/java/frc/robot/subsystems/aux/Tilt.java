@@ -9,7 +9,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
 
@@ -18,7 +17,7 @@ public class Tilt extends SubsystemBase {
 
   SparkClosedLoopController tiltController = tilt.getClosedLoopController();
 
-  double targetAngle = 190.0;
+  public double targetAngle = 190.0;
 
   public Tilt() {
     // tilt PID values
@@ -36,11 +35,11 @@ public class Tilt extends SubsystemBase {
         .p(TiltConstants.tiltkP)
         .i(TiltConstants.tiltkI)
         .d(TiltConstants.tiltkD)
-        .outputRange(-1, 1)
-        .maxMotion
-        .cruiseVelocity(100)
-        .maxAcceleration(200)
-        .allowedProfileError(0.5);
+        .outputRange(-1, 1);
+        // .maxMotion
+        // .cruiseVelocity(100)
+        // .maxAcceleration(200)
+        // .allowedProfileError(0.5);
 
     tiltConfig
         .softLimit
@@ -52,16 +51,26 @@ public class Tilt extends SubsystemBase {
     tilt.configure(tiltConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
+  private double degreesToRotations(double degrees) {
+    return degrees / 360.0;
+  }
+
   public void setTiltAngle() {
     tiltController.setSetpoint(degreesToRotations(targetAngle), ControlType.kPosition);
   }
 
-  public Command setTiltAngleCommand() {
-    return this.runOnce(this::setTiltAngle);
+  public void increaseTiltAngle() {
+    if (Math.abs((tilt.getEncoder().getPosition() * 360) - targetAngle) > 10) {
+      targetAngle += 1.0;
+    }
+    tiltController.setSetpoint(degreesToRotations(targetAngle), ControlType.kPosition);
   }
 
-  private double degreesToRotations(double degrees) {
-    return degrees / 360.0;
+  public void decreaseTiltAngle() {
+    if (Math.abs((tilt.getEncoder().getPosition() * 360) - targetAngle) > 10) {
+      targetAngle -= 1.0;
+    }
+    tiltController.setSetpoint(degreesToRotations(targetAngle), ControlType.kPosition);
   }
 
   @Override

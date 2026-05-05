@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.aux.*;
 
@@ -19,45 +18,29 @@ public class AuxCommands extends SubsystemBase {
   }
 
   // intakes untill ir sensor is triggered, then spins shooter motors (ideally)
-  public void intakeTrue() {
+  public void intakeSystemRun() {
     if (irSensor.get()) {
-      intake.intakeRun();
-      loadingDrum.drumRun();
+      intake.intakeOn();
+      loadingDrum.drumOn();
     } else {
-      intake.intakeStop();
-      loadingDrum.drumStop();
-      shooter.shooterRun();
+      intake.intakeOff();
+      loadingDrum.drumOff();
+      shooter.shooterOn();
     }
   }
 
-  public void intakeFalse() {
-    intake.intakeStop();
-    loadingDrum.drumStop();
+  public void intakeSystemStop() {
+    intake.intakeOff();
+    loadingDrum.drumOff();
   }
 
-  public void shootTrue() {
-    loadingDrum.drumRun();
-    shooter.shooterRun();
+  public void shooterSystemRun() {
+    loadingDrum.drumOn();
+    shooter.shooterOn();
   }
 
-  public void shootFalse() {
-    loadingDrum.drumStop();
-    shooter.shooterStop();
-  }
-
-  public Command autoIntakeTrue() {
-    return run(this::intakeTrue);
-  }
-
-  public Command autoIntakeFalse() {
-    return run(this::intakeFalse);
-  }
-
-  public Command autoShootTrue() {
-    return run(this::shootTrue);
-  }
-
-  public Command autoShootFalse() {
-    return run(this::shootFalse);
+  public void shooterSystemStop() {
+    loadingDrum.drumOff();
+    shooter.shooterOff();
   }
 }

@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.*;
 import frc.robot.commands.*;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.aux.*;
@@ -36,7 +35,7 @@ public class RobotContainer {
   private final Shooter shooter;
   private final LoadingDrum loadingDrum;
   private final Tilt tilt;
-  private final AuxCommands AuxSystem;
+  private final AuxCommands auxSystem;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -50,9 +49,7 @@ public class RobotContainer {
     intake = new Intake();
     loadingDrum = new LoadingDrum();
     tilt = new Tilt();
-    // ShooterSystem = new ShooterCommands(shooter, loadingDrum);
-    // IntakeSystem = new IntakeCommands(intake, loadingDrum);
-    AuxSystem = new AuxCommands(intake, shooter, loadingDrum);
+    auxSystem = new AuxCommands(intake, shooter, loadingDrum);
 
     switch (Constants.currentMode) {
       case REAL:
@@ -110,11 +107,11 @@ public class RobotContainer {
     }
 
     // Pathplanner named commands
-    NamedCommands.registerCommand("Intake On", AuxSystem.autoIntakeTrue());
-    NamedCommands.registerCommand("Intake Off", AuxSystem.autoIntakeFalse());
-    NamedCommands.registerCommand("Shoot On", AuxSystem.autoShootTrue());
-    NamedCommands.registerCommand("Shoot Off", AuxSystem.autoShootFalse());
-
+    NamedCommands.registerCommand("Intake Run", Commands.runOnce(auxSystem::intakeSystemRun));
+    NamedCommands.registerCommand("Intake Stop", Commands.runOnce(auxSystem::intakeSystemStop));
+    NamedCommands.registerCommand("Shooter Run", Commands.runOnce(auxSystem::shooterSystemRun));
+    NamedCommands.registerCommand("Shooter Stop", Commands.runOnce(auxSystem::shooterSystemStop));
+    
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -180,15 +177,38 @@ public class RobotContainer {
     // Intakes with left trigger
     controller
         .leftTrigger()
-        .whileTrue(Commands.startEnd(() -> AuxSystem.intakeTrue(), () -> AuxSystem.intakeFalse()));
+        .whileTrue(
+          Commands.run(auxSystem::intakeSystemRun));
+
+    // Stops intake with left bumper 
+    controller
+        .leftBumper() 
+        .whileTrue(
+          Commands.runOnce(auxSystem::intakeSystemStop));
 
     // Shoots with right trigger
     controller
         .rightTrigger()
-        .whileTrue(Commands.startEnd(() -> AuxSystem.shootTrue(), () -> AuxSystem.shootFalse()));
+        .whileTrue(
+          Commands.startEnd(auxSystem::shooterSystemRun, auxSystem::shooterSystemStop));
 
-    // Sets the tilt angle with left bumper
-    controller.leftBumper().onTrue(tilt.setTiltAngleCommand());
+    // Sets the tilt angle with right bumper to the current value of targetAngle
+    controller
+        .rightBumper()
+        .whileTrue(
+          Commands.runOnce(tilt::setTiltAngle));
+
+    // increase the tilt angle with d-pad up
+    controller 
+        .povUp()
+        .whileTrue(
+          Commands.run(tilt::increaseTiltAngle));
+
+    // decrease the tilt angle with d-pad down
+    controller
+        .povDown()
+        .whileTrue(
+          Commands.run(tilt::decreaseTiltAngle));
   }
 
   /**

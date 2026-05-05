@@ -47,7 +47,7 @@ public class Shooter extends SubsystemBase {
         shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  public void shooterRun() {
+  public void shooterOn() {
     // update shooter pid when shooting (hopefuly doesnt run too many times to overload memory)
     SparkFlexConfig shooterConfig = new SparkFlexConfig();
     shooterConfig
@@ -69,7 +69,7 @@ public class Shooter extends SubsystemBase {
     bottomShooterController.setSetpoint(-ShooterConstants.SHOOTER_RPM, ControlType.kVelocity);
   }
 
-  public void shooterStop() {
+  public void shooterOff() {
     topShooter.set(0);
     bottomShooter.set(0);
   }

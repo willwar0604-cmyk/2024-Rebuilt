@@ -36,13 +36,13 @@ public class Intake extends SubsystemBase {
         pickupConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  public void intakeRun() {
+  public void intakeOn() {
     groundPickup.set(PowerConstants.INTAKE_POWER);
     leftHotwheel.set(PowerConstants.INTAKE_POWER);
     rightHotwheel.set(-PowerConstants.INTAKE_POWER);
   }
 
-  public void intakeStop() {
+  public void intakeOff() {
     groundPickup.set(0);
     leftHotwheel.set(0);
     rightHotwheel.set(0);
