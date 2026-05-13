@@ -179,8 +179,8 @@ public class RobotContainer {
     controller.povLeft().onTrue(Commands.runOnce(tilt::setManualTiltAngle));
 
     // Tilt up and down with d-pad up and down
-    controller.povUp().whileTrue(tilt.increaseTiltAngle());
-    controller.povDown().whileTrue(tilt.decreaseTiltAngle());
+    // controller.povUp().whileTrue(tilt.increaseTiltAngle());
+    // controller.povDown().whileTrue(tilt.decreaseTiltAngle());
 
     // Tilts with right joystick Y while right bumper is held
     controller.rightBumper().whileTrue(tilt.joystickTilt(() -> -controller.getRightY()));

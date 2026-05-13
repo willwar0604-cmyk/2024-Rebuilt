@@ -65,28 +65,14 @@ public class Tilt extends SubsystemBase {
     tiltController.setSetpoint(targetAngle, ControlType.kMAXMotionPositionControl);
   }
 
-  public Command increaseTiltAngle() {
-    return run(
-        () -> {
-          this.setTiltAngle();
-          targetAngle = clampTargetAngle(targetAngle) + 0.25;
-        });
-  }
-
-  public Command decreaseTiltAngle() {
-    return run(
-        () -> {
-          this.setTiltAngle();
-          targetAngle = clampTargetAngle(targetAngle) - .25;
-        });
-  }
-
   public Command joystickTilt(DoubleSupplier joystickY) {
     return run(
         () -> {
           this.setTiltAngle();
           double Y = joystickY.getAsDouble();
-          targetAngle = clampTargetAngle(targetAngle + Y);
+          if (Math.abs(Y) > 0.150) {
+            targetAngle = clampTargetAngle(targetAngle + Math.pow(Y, 3));
+          }
         });
   }
 
