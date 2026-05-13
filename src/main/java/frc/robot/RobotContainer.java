@@ -175,10 +175,6 @@ public class RobotContainer {
     controller.rightTrigger().whileTrue(shooter.shoot());
     controller.rightTrigger().and(() -> shooter.isUpToSpeed()).whileTrue(intake.feed());
 
-    // Stop intake and shooter with right bumper
-    controller.rightBumper().onTrue(Commands.runOnce(intake::stopAll));
-    controller.rightBumper().onTrue(Commands.runOnce(shooter::stop));
-
     // Manual angle controll with d-pad left
     controller.povLeft().onTrue(Commands.runOnce(tilt::setManualTiltAngle));
 
@@ -186,7 +182,8 @@ public class RobotContainer {
     controller.povUp().whileTrue(tilt.increaseTiltAngle());
     controller.povDown().whileTrue(tilt.decreaseTiltAngle());
 
-    tilt.joystickTilt(controller.getRightY());
+    // Tilts with right joystick Y while right bumper is held
+    controller.rightBumper().whileTrue(tilt.joystickTilt(() -> -controller.getRightY()));
   }
 
   /**

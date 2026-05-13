@@ -11,6 +11,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -22,6 +23,10 @@ public class Tilt extends SubsystemBase {
   // range is 0-45 so safe range is 5-40
   LoggedNetworkNumber manualTargetAngle = new LoggedNetworkNumber("Tilt/ManualTargetAngle", 25.0);
   double targetAngle = 5.0;
+
+  private double clampTargetAngle(double angle) {
+    return Math.max(5.0, Math.min(40.0, angle));
+  }
 
   public Tilt() {
     // tilt PID values
@@ -60,14 +65,11 @@ public class Tilt extends SubsystemBase {
     tiltController.setSetpoint(targetAngle, ControlType.kMAXMotionPositionControl);
   }
 
-  // i dunno whether to have it as runOnce or run so i'll
-  // have one of each and see what works :)
-
   public Command increaseTiltAngle() {
     return run(
         () -> {
           this.setTiltAngle();
-          targetAngle += .25;
+          targetAngle = clampTargetAngle(targetAngle) + 0.25;
         });
   }
 
@@ -75,15 +77,16 @@ public class Tilt extends SubsystemBase {
     return run(
         () -> {
           this.setTiltAngle();
-          targetAngle -= .25;
+          targetAngle = clampTargetAngle(targetAngle) - .25;
         });
   }
 
-  public Command joystickTilt(double joystickY) {
+  public Command joystickTilt(DoubleSupplier joystickY) {
     return run(
         () -> {
           this.setTiltAngle();
-          targetAngle = targetAngle + (joystickY * 1);
+          double Y = joystickY.getAsDouble();
+          targetAngle = clampTargetAngle(targetAngle + Y);
         });
   }
 
