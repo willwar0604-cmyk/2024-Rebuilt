@@ -7,10 +7,11 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Shooter extends SubsystemBase {
   SparkFlex topShooter = new SparkFlex(Constants.TOP_SHOOTER, SparkFlex.MotorType.kBrushless);
@@ -19,24 +20,26 @@ public class Shooter extends SubsystemBase {
   SparkClosedLoopController topShooterController = topShooter.getClosedLoopController();
   SparkClosedLoopController bottomShooterController = bottomShooter.getClosedLoopController();
 
-  public static double SHOOTER_RPM = 1000;
-  public static double P = 0.0001;
-  public static double I = 0.0;
-  public static double D = 0.0;
-  public static double S = 0.0;
-  public static double V = 0.0018;
-
   public Shooter() {
-    SmartDashboard.putNumber("Shooter/Shooter RPM/RPM", SHOOTER_RPM);
-
     // shooter PID values
-    SmartDashboard.putNumber("Shooter/Shooter PID/kP", P);
-    SmartDashboard.putNumber("Shooter/Shooter PID/kI", I);
-    SmartDashboard.putNumber("Shooter/Shooter PID/kD", D);
-    SmartDashboard.putNumber("Shooter/Shooter PID/FFkV", V);
+    LoggedNetworkNumber P = new LoggedNetworkNumber("Shooter/Shooter PID/kP", 0.0001);
+    LoggedNetworkNumber I = new LoggedNetworkNumber("Shooter/Shooter PID/kI", 0.0);
+    LoggedNetworkNumber D = new LoggedNetworkNumber("Shooter/Shooter PID/kD", 0.0);
+
+    // shooter feedForward values
+    LoggedNetworkNumber S = new LoggedNetworkNumber("Shooter/Shooter FF/kS", 0.0);
+    LoggedNetworkNumber V = new LoggedNetworkNumber("Shooter/Shooter FF/kV", 0.0018);
 
     SparkFlexConfig shooterConfig = new SparkFlexConfig();
-    shooterConfig.idleMode(IdleMode.kBrake).closedLoop.p(P).i(I).d(D).feedForward.kS(S).kV(V);
+    shooterConfig
+        .idleMode(IdleMode.kBrake)
+        .closedLoop
+        .p(P.get())
+        .i(I.get())
+        .d(D.get())
+        .feedForward
+        .kS(S.get())
+        .kV(V.get());
 
     topShooter.configure(
         shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -44,38 +47,32 @@ public class Shooter extends SubsystemBase {
         shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  public Command spinUp() {
-    return runOnce(
-        () -> {
-          topShooterController.setSetpoint(SHOOTER_RPM, ControlType.kVelocity);
-          bottomShooterController.setSetpoint(SHOOTER_RPM, ControlType.kVelocity);
-        });
+  LoggedNetworkNumber shooterRPM = new LoggedNetworkNumber("Shooter/Shooter RPM/RPM", 3000);
+
+  public Command shoot() {
+    return run(() -> {
+          topShooterController.setSetpoint(shooterRPM.get(), ControlType.kVelocity);
+          bottomShooterController.setSetpoint(-shooterRPM.get(), ControlType.kVelocity);
+        })
+        .finallyDo(() -> stop());
   }
 
-  public Command stop() {
-    return runOnce(
-        () -> {
-          topShooterController.setSetpoint(0, ControlType.kVelocity);
-          bottomShooterController.setSetpoint(0, ControlType.kVelocity);
-        });
+  public void stop() {
+    topShooter.set(0);
+    bottomShooter.set(0);
   }
 
   public boolean isUpToSpeed() {
-    return Math.abs(topShooter.getEncoder().getVelocity() - SHOOTER_RPM) <= 50;
+    return Math.abs(topShooter.getEncoder().getVelocity() - shooterRPM.get()) <= 50;
   }
 
   @Override
   public void periodic() {
-    SHOOTER_RPM = Math.round(SmartDashboard.getNumber("Shooter/Shooter RPM", SHOOTER_RPM));
-
-    P = SmartDashboard.getNumber("Shooter/Shooter PID/kP", P);
-    I = SmartDashboard.getNumber("Shooter/Shooter PID/kI", I);
-    D = SmartDashboard.getNumber("Shooter/Shooter PID/kD", D);
-    V = SmartDashboard.getNumber("Shooter/Shooter PID/FFkV", V);
-
-    SmartDashboard.putNumber(
+    Logger.recordOutput(
         "Shooter/Shooter Current RPM/Top RPM", topShooter.getEncoder().getVelocity());
-    SmartDashboard.putNumber(
+    Logger.recordOutput(
         "Shooter/Shooter Current RPM/Bottom RPM", bottomShooter.getEncoder().getVelocity());
+
+    Logger.recordOutput("Shooter/Shooter Up to Speed", isUpToSpeed());
   }
 }

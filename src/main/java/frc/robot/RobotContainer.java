@@ -8,7 +8,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -34,7 +33,6 @@ public class RobotContainer {
   private final Intake intake;
   private final Shooter shooter;
   private final Tilt tilt;
-  private final SubsystemCommands subsystem;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -47,7 +45,6 @@ public class RobotContainer {
     tilt = new Tilt();
     intake = new Intake();
     shooter = new Shooter();
-    subsystem = new SubsystemCommands(intake, shooter);
 
     switch (Constants.currentMode) {
       case REAL:
@@ -105,9 +102,6 @@ public class RobotContainer {
     }
 
     // Pathplanner named commands
-    NamedCommands.registerCommand("Intake", subsystem.intake());
-    NamedCommands.registerCommand("Shoot", subsystem.shoot());
-    NamedCommands.registerCommand("Stop All", subsystem.end());
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -172,19 +166,27 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     // Intakes with left trigger
-    controller.leftTrigger().whileTrue(subsystem.intake());
+    controller.leftTrigger().whileTrue(intake.intake());
+
+    // Dumps intake with left bumper
+    controller.leftBumper().whileTrue(intake.dump());
 
     // Shoots with right trigger
-    controller.rightTrigger().whileTrue(subsystem.shoot());
+    controller.rightTrigger().whileTrue(shooter.shoot());
+    controller.rightTrigger().and(() -> shooter.isUpToSpeed()).whileTrue(intake.feed());
 
-    // Sets the tilt angle with right bumper to the current value of targetAngle
-    controller.rightBumper().onTrue(Commands.runOnce(tilt::setTiltAngle));
+    // Stop intake and shooter with right bumper
+    controller.rightBumper().onTrue(Commands.runOnce(intake::stopAll));
+    controller.rightBumper().onTrue(Commands.runOnce(shooter::stop));
 
-    // increase the tilt angle with d-pad up
-    controller.povUp().whileTrue(Commands.run(tilt::increaseTiltAngle));
+    // Manual angle controll with d-pad left
+    controller.povLeft().onTrue(Commands.runOnce(tilt::setManualTiltAngle));
 
-    // decrease the tilt angle with d-pad down
-    controller.povDown().whileTrue(Commands.run(tilt::decreaseTiltAngle));
+    // Tilt up and down with d-pad up and down
+    controller.povUp().whileTrue(tilt.increaseTiltAngle());
+    controller.povDown().whileTrue(tilt.decreaseTiltAngle());
+
+    tilt.joystickTilt(controller.getRightY());
   }
 
   /**

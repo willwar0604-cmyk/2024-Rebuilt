@@ -8,8 +8,6 @@ public class Constants {
   public static final Mode simMode = Mode.SIM;
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
-  public static double MAX_SPEED = 5.2;
-  public static double NathanSpeed = 2.0;
   public static final double TILT_ANGLE_OFFSET = -25;
   public static final double APRIL_TAG_OFFSET = 1.01237005816;
 
@@ -28,10 +26,6 @@ public class Constants {
 
   public static final int DRIVER_CONTROLLER_PORT = 0;
   public static final int OPERATOR_CONTROLLER_PORT = 1;
-
-  public static final double INTAKE_POWER = 0.8;
-  public static final double DRUM_POWER = 0.7;
-  public static final double MAX_TILT_POWER = 1;
 
   // vision still needs to be added
   public static AprilTagFieldLayout aprilTagLayout =

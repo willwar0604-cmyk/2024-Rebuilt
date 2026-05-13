@@ -7,17 +7,22 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
-  public SparkMax leftHotwheel =
+  private final DigitalInput irSensor = new DigitalInput(0);
+
+  private final SparkMax leftHotwheel =
       new SparkMax(Constants.LEFT_HOTWHEEL, SparkMax.MotorType.kBrushless);
-  public SparkMax rightHotwheel =
+  private final SparkMax rightHotwheel =
       new SparkMax(Constants.RIGHT_HOTWHEEL, SparkMax.MotorType.kBrushless);
-  public SparkMax loadingDrum = new SparkMax(Constants.LOADING_DRUM, SparkMax.MotorType.kBrushless);
-  public SparkFlex groundPickup =
+  private final SparkMax loadingDrum =
+      new SparkMax(Constants.LOADING_DRUM, SparkMax.MotorType.kBrushless);
+  private final SparkFlex groundPickup =
       new SparkFlex(Constants.GROUND_PICKUP, SparkFlex.MotorType.kBrushless);
 
   public Intake() {
@@ -39,28 +44,38 @@ public class Intake extends SubsystemBase {
   }
 
   public Command intake() {
-    return runOnce(
-        () -> {
+    return run(() -> {
           groundPickup.set(0.8);
           leftHotwheel.set(0.8);
-          rightHotwheel.set(0.8);
+          rightHotwheel.set(-0.8);
           loadingDrum.set(0.8);
-        });
+        })
+        .onlyWhile(() -> irSensor.get())
+        .finallyDo(() -> stopAll());
   }
 
-  public Command load() {
-    return runOnce(() -> loadingDrum.set(0.8));
+  public Command dump() {
+    return run(() -> {
+          groundPickup.set(-0.4);
+          leftHotwheel.set(-0.4);
+          rightHotwheel.set(0.4);
+          loadingDrum.set(-0.4);
+        })
+        .finallyDo(() -> stopAll());
   }
 
-  public Command stop() {
-    return runOnce(
-        () -> {
-          groundPickup.stopMotor();
-          leftHotwheel.stopMotor();
-          rightHotwheel.stopMotor();
-          loadingDrum.stopMotor();
-        });
+  public Command feed() {
+    return run(() -> loadingDrum.set(0.8)).finallyDo(() -> stopAll());
   }
 
-  public void periodic() {}
+  public void stopAll() {
+    groundPickup.stopMotor();
+    leftHotwheel.stopMotor();
+    rightHotwheel.stopMotor();
+    loadingDrum.stopMotor();
+  }
+
+  public void periodic() {
+    Logger.recordOutput("Intake/Note Loaded", !irSensor.get());
+  }
 }
