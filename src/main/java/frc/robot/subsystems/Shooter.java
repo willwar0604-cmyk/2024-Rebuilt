@@ -9,13 +9,15 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.ShooterConstants;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Shooter extends SubsystemBase {
-  SparkFlex topShooter = new SparkFlex(Constants.TOP_SHOOTER, SparkFlex.MotorType.kBrushless);
-  SparkFlex bottomShooter = new SparkFlex(Constants.BOTTOM_SHOOTER, SparkFlex.MotorType.kBrushless);
+  SparkFlex topShooter =
+      new SparkFlex(ShooterConstants.TOP_SHOOTER, SparkFlex.MotorType.kBrushless);
+  SparkFlex bottomShooter =
+      new SparkFlex(ShooterConstants.BOTTOM_SHOOTER, SparkFlex.MotorType.kBrushless);
 
   SparkClosedLoopController topShooterController = topShooter.getClosedLoopController();
   SparkClosedLoopController bottomShooterController = bottomShooter.getClosedLoopController();

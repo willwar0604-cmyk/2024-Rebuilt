@@ -10,20 +10,20 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.IntakeConstants;
 import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
   private final DigitalInput irSensor = new DigitalInput(0);
 
   private final SparkMax leftHotwheel =
-      new SparkMax(Constants.LEFT_HOTWHEEL, SparkMax.MotorType.kBrushless);
+      new SparkMax(IntakeConstants.LEFT_HOTWHEEL, SparkMax.MotorType.kBrushless);
   private final SparkMax rightHotwheel =
-      new SparkMax(Constants.RIGHT_HOTWHEEL, SparkMax.MotorType.kBrushless);
+      new SparkMax(IntakeConstants.RIGHT_HOTWHEEL, SparkMax.MotorType.kBrushless);
   private final SparkMax loadingDrum =
-      new SparkMax(Constants.LOADING_DRUM, SparkMax.MotorType.kBrushless);
+      new SparkMax(IntakeConstants.LOADING_DRUM, SparkMax.MotorType.kBrushless);
   private final SparkFlex groundPickup =
-      new SparkFlex(Constants.GROUND_PICKUP, SparkFlex.MotorType.kBrushless);
+      new SparkFlex(IntakeConstants.GROUND_PICKUP, SparkFlex.MotorType.kBrushless);
 
   public Intake() {
     SparkFlexConfig pickupConfig = new SparkFlexConfig();

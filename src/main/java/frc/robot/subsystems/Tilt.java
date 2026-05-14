@@ -10,13 +10,13 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.TiltConstants;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Tilt extends SubsystemBase {
-  static SparkMax tilt = new SparkMax(Constants.TILT, MotorType.kBrushless);
+  static SparkMax tilt = new SparkMax(TiltConstants.TILT, MotorType.kBrushless);
 
   static SparkClosedLoopController tiltController = tilt.getClosedLoopController();
 
