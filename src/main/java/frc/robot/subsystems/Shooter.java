@@ -47,7 +47,7 @@ public class Shooter extends SubsystemBase {
         shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  LoggedNetworkNumber shooterRPM = new LoggedNetworkNumber("Shooter/Shooter RPM/RPM", 3000);
+  LoggedNetworkNumber shooterRPM = new LoggedNetworkNumber("Shooter/Shooter RPM/RPM", 2500);
 
   public Command shoot() {
     return run(() -> {

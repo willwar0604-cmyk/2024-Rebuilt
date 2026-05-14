@@ -8,6 +8,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -102,6 +103,9 @@ public class RobotContainer {
     }
 
     // Pathplanner named commands
+    NamedCommands.registerCommand("runShooter", shooter.shoot());
+    NamedCommands.registerCommand("runIntake", intake.intake());
+    NamedCommands.registerCommand("Feed", intake.feed().onlyWhile(() -> shooter.isUpToSpeed()));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -137,8 +141,8 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
+            () -> controller.getLeftY(),
+            () -> controller.getLeftX(),
             () -> controller.getRightX()));
 
     // Lock to 0° when A button is held
@@ -175,15 +179,8 @@ public class RobotContainer {
     controller.rightTrigger().whileTrue(shooter.shoot());
     controller.rightTrigger().and(() -> shooter.isUpToSpeed()).whileTrue(intake.feed());
 
-    // Manual angle controll with d-pad left
-    controller.povLeft().onTrue(Commands.runOnce(tilt::setManualTiltAngle));
-
-    // Tilt up and down with d-pad up and down
-    // controller.povUp().whileTrue(tilt.increaseTiltAngle());
-    // controller.povDown().whileTrue(tilt.decreaseTiltAngle());
-
     // Tilts with right joystick Y while right bumper is held
-    controller.rightBumper().whileTrue(tilt.joystickTilt(() -> -controller.getRightY()));
+    controller.rightBumper().whileTrue(tilt.joystickTilt(() -> controller.getRightY()));
   }
 
   /**

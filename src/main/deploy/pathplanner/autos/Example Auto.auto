@@ -7,19 +7,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Intake"
+            "name": "runIntake"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "Path 1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Path 2"
           }
         },
         {
@@ -31,19 +25,25 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "runShooter"
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 0.5
+            "pathName": "Path 2"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Stop All"
+            "name": "Feed"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {

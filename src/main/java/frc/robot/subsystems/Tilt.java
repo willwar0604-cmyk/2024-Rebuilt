@@ -16,16 +16,15 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Tilt extends SubsystemBase {
-  SparkMax tilt = new SparkMax(Constants.TILT, MotorType.kBrushless);
+  static SparkMax tilt = new SparkMax(Constants.TILT, MotorType.kBrushless);
 
-  SparkClosedLoopController tiltController = tilt.getClosedLoopController();
+  static SparkClosedLoopController tiltController = tilt.getClosedLoopController();
 
-  // range is 0-45 so safe range is 5-40
-  LoggedNetworkNumber manualTargetAngle = new LoggedNetworkNumber("Tilt/ManualTargetAngle", 25.0);
-  double targetAngle = 5.0;
+  // range is 0-45 so safe range is 10-40
+  static double targetAngle = 10.0;
 
   private double clampTargetAngle(double angle) {
-    return Math.max(5.0, Math.min(40.0, angle));
+    return Math.max(7.5, Math.min(40.0, angle));
   }
 
   public Tilt() {
@@ -35,49 +34,36 @@ public class Tilt extends SubsystemBase {
     LoggedNetworkNumber D = new LoggedNetworkNumber("Tilt/Tilt PID/kD", 0.0);
 
     SparkMaxConfig tiltConfig = new SparkMaxConfig();
-    tiltConfig.idleMode(IdleMode.kBrake);
+    tiltConfig.idleMode(IdleMode.kCoast);
 
-    tiltConfig
-        .closedLoop
-        .p(P.get())
-        .i(I.get())
-        .d(D.get())
-        .maxMotion
-        .cruiseVelocity(100)
-        .maxAcceleration(200)
-        .allowedProfileError(0.5);
-
-    tiltConfig
-        .softLimit
-        .forwardSoftLimitEnabled(true)
-        .forwardSoftLimit(45)
-        .reverseSoftLimitEnabled(true)
-        .reverseSoftLimit(5);
+    tiltConfig.closedLoop.p(P.get()).i(I.get()).d(D.get());
 
     tilt.configure(tiltConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  public void setManualTiltAngle() {
-    tiltController.setSetpoint(manualTargetAngle.get(), ControlType.kMAXMotionPositionControl);
+  public static void resetTiltPosition() {
+    tilt.getEncoder().setPosition(0);
   }
 
   public void setTiltAngle() {
-    tiltController.setSetpoint(targetAngle, ControlType.kMAXMotionPositionControl);
+    tiltController.setSetpoint(targetAngle + 0.5, ControlType.kPosition); // add 0.5 bc it tends to be half a degree too low
   }
 
   public Command joystickTilt(DoubleSupplier joystickY) {
     return run(
         () -> {
-          this.setTiltAngle();
           double Y = joystickY.getAsDouble();
           if (Math.abs(Y) > 0.150) {
-            targetAngle = clampTargetAngle(targetAngle + Math.pow(Y, 3));
-          }
-        });
+            targetAngle = clampTargetAngle(targetAngle + Y);
+          }});
   }
 
   @Override
   public void periodic() {
+    if (Math.abs(tilt.getEncoder().getPosition() - targetAngle) <= 1) {
+      setTiltAngle();
+    }
+
     Logger.recordOutput("Tilt/Tilt Current Angle", tilt.getEncoder().getPosition());
     Logger.recordOutput("Tilt/Tilt Target Angle", targetAngle);
   }

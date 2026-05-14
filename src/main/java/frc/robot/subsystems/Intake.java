@@ -45,10 +45,7 @@ public class Intake extends SubsystemBase {
 
   public Command intake() {
     return run(() -> {
-          groundPickup.set(0.8);
-          leftHotwheel.set(0.8);
-          rightHotwheel.set(-0.8);
-          loadingDrum.set(0.8);
+          runAll(0.8);
         })
         .onlyWhile(() -> irSensor.get())
         .finallyDo(() -> stopAll());
@@ -56,16 +53,20 @@ public class Intake extends SubsystemBase {
 
   public Command dump() {
     return run(() -> {
-          groundPickup.set(-0.4);
-          leftHotwheel.set(-0.4);
-          rightHotwheel.set(0.4);
-          loadingDrum.set(-0.4);
+          runAll(-0.4);
         })
         .finallyDo(() -> stopAll());
   }
 
   public Command feed() {
-    return run(() -> loadingDrum.set(0.8)).finallyDo(() -> stopAll());
+    return run(() -> loadingDrum.set(0.7)).finallyDo(() -> stopAll());
+  }
+
+  public void runAll(double power) {
+    groundPickup.set(power);
+    leftHotwheel.set(power);
+    rightHotwheel.set(-power);
+    loadingDrum.set(power - 0.1);
   }
 
   public void stopAll() {
