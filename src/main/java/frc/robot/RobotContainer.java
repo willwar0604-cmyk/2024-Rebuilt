@@ -169,11 +169,13 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    // Intakes with left trigger
+    // Intakes with left trigger and moves the tilt down to stop pop-out
     controller.leftTrigger().whileTrue(intake.intake());
+    controller.leftTrigger().whileTrue(tilt.intakeTiltFix());
 
     // Dumps intake with left bumper
     controller.leftBumper().whileTrue(intake.dump());
+    controller.leftBumper().whileTrue(tilt.intakeTiltFix());
 
     // Shoots with right trigger
     controller.rightTrigger().whileTrue(shooter.shoot());

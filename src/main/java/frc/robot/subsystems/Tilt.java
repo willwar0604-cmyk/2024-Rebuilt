@@ -46,7 +46,18 @@ public class Tilt extends SubsystemBase {
   }
 
   public void setTiltAngle() {
-    tiltController.setSetpoint(targetAngle + 0.5, ControlType.kPosition); // add 0.5 bc it tends to be half a degree too low
+    tiltController.setSetpoint(
+        targetAngle + 0.5,
+        ControlType.kPosition); // add 0.5 bc it tends to be half a degree too low,
+    // the bouncing looks like play/lash in the mounting/gears, the actual encoder value barely
+    // changes so no programming fix
+  }
+
+  public Command intakeTiltFix() {
+    return runOnce(
+        () -> {
+          targetAngle = 10;
+        });
   }
 
   public Command joystickTilt(DoubleSupplier joystickY) {
@@ -54,13 +65,14 @@ public class Tilt extends SubsystemBase {
         () -> {
           double Y = joystickY.getAsDouble();
           if (Math.abs(Y) > 0.150) {
-            targetAngle = clampTargetAngle(targetAngle + Y);
-          }});
+            targetAngle = clampTargetAngle(targetAngle + Math.pow(Y, 3));
+          }
+        });
   }
 
   @Override
   public void periodic() {
-    if (Math.abs(tilt.getEncoder().getPosition() - targetAngle) <= 1) {
+    if (Math.abs(tilt.getEncoder().getPosition() - targetAngle) >= 1) {
       setTiltAngle();
     }
 
