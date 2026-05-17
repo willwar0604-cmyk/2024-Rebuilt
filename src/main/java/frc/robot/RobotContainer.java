@@ -111,7 +111,7 @@ public class RobotContainer {
     }
 
     // Pathplanner named commands
-    NamedCommands.registerCommand("runShooter", shooter.shoot());
+    NamedCommands.registerCommand("runShooter", shooter.shoot(2500));
     NamedCommands.registerCommand("runIntake", intake.intake());
     NamedCommands.registerCommand("Feed", intake.feed().onlyWhile(() -> shooter.isUpToSpeed()));
 
@@ -179,14 +179,14 @@ public class RobotContainer {
 
     // Intakes with left trigger and moves the tilt down to stop pop-out
     controller.leftTrigger().whileTrue(intake.intake());
-    controller.leftTrigger().whileTrue(tilt.intakeTiltFix());
+    controller.leftTrigger().whileTrue(tilt.manualTilt(10.0));
 
     // Dumps intake with left bumper
     controller.leftBumper().whileTrue(intake.dump());
-    controller.leftBumper().whileTrue(tilt.intakeTiltFix());
+    controller.leftBumper().whileTrue(tilt.manualTilt(10.0));
 
     // Shoots with right trigger
-    controller.rightTrigger().whileTrue(shooter.shoot());
+    controller.rightTrigger().whileTrue(shooter.shoot(2500));
     controller.rightTrigger().and(() -> shooter.isUpToSpeed()).whileTrue(intake.feed());
 
     // Tilts with right joystick Y while right bumper is held

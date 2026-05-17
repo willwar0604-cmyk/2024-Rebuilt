@@ -11,21 +11,18 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TiltConstants;
+import frc.robot.VectorKit.hardware.AbsoluteEncoder;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Tilt extends SubsystemBase {
-  static SparkMax tilt = new SparkMax(TiltConstants.TILT, MotorType.kBrushless);
+  private final SparkMax tilt = new SparkMax(TiltConstants.TILT, MotorType.kBrushless);
 
-  static SparkClosedLoopController tiltController = tilt.getClosedLoopController();
+  private final SparkClosedLoopController tiltController = tilt.getClosedLoopController();
 
-  // range is 0-45 so safe range is 10-40
-  static double targetAngle = 10.0;
-
-  private double clampTargetAngle(double angle) {
-    return Math.max(7.5, Math.min(40.0, angle));
-  }
+  // channel and offsets need to be double checked
+  private final AbsoluteEncoder tiltEncoder = new AbsoluteEncoder(1, 195);
 
   public Tilt() {
     // tilt PID values
@@ -34,49 +31,42 @@ public class Tilt extends SubsystemBase {
     LoggedNetworkNumber D = new LoggedNetworkNumber("Tilt/Tilt PID/kD", 0.0);
 
     SparkMaxConfig tiltConfig = new SparkMaxConfig();
-    tiltConfig.idleMode(IdleMode.kCoast);
-
-    tiltConfig.closedLoop.p(P.get()).i(I.get()).d(D.get());
+    tiltConfig.idleMode(IdleMode.kCoast).closedLoop.p(P.get()).i(I.get()).d(D.get());
 
     tilt.configure(tiltConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  public static void resetTiltPosition() {
-    tilt.getEncoder().setPosition(0);
+  // range is 0-45 so safe range is 10-40
+  private double clampedAngle(double unclampedAngle) {
+    return Math.max(10.0, Math.min(40.0, unclampedAngle));
   }
 
-  public void setTiltAngle() {
-    tiltController.setSetpoint(
-        targetAngle + 0.5,
-        ControlType.kPosition); // add 0.5 bc it tends to be half a degree too low,
-    // the bouncing looks like play/lash in the mounting/gears, the actual encoder value barely
-    // changes so no programming fix
-  }
-
-  public Command intakeTiltFix() {
-    return runOnce(
-        () -> {
-          targetAngle = 10;
-        });
-  }
-
-  public Command joystickTilt(DoubleSupplier joystickY) {
+  public Command joystickTilt(DoubleSupplier deltaAngle) {
     return run(
         () -> {
-          double Y = joystickY.getAsDouble();
-          if (Math.abs(Y) > 0.150) {
-            targetAngle = clampTargetAngle(targetAngle + Math.pow(Y, 3));
-          }
+          tiltController.setSetpoint(
+              clampedAngle((tiltEncoder.getRaw() * 360) + deltaAngle.getAsDouble()),
+              ControlType.kPosition);
         });
+  }
+
+  public Command manualTilt(double manualAngle) {
+    return joystickTilt(() -> manualAngle - (tiltEncoder.getRaw() * 360));
   }
 
   @Override
   public void periodic() {
-    if (Math.abs(tilt.getEncoder().getPosition() - targetAngle) >= 1) {
-      setTiltAngle();
-    }
 
-    Logger.recordOutput("Tilt/Tilt Current Angle", tilt.getEncoder().getPosition());
-    Logger.recordOutput("Tilt/Tilt Target Angle", targetAngle);
+    // if ((tiltEncoder.getRaw() * 360) >= 40) {
+    //   tiltController.setSetpoint(40, ControlType.kPosition);
+    // }
+
+    // if ((tiltEncoder.getRaw() * 360) <= 10) {
+    //   tiltController.setSetpoint(10, ControlType.kPosition);
+    // }
+
+    Logger.recordOutput("Tilt/Tilt Current Rotation", tiltEncoder.get());
+    Logger.recordOutput("Tilt/Tilt Current Raw Angle", tiltEncoder.getRaw() * 360);
+    Logger.recordOutput("Tilt/Tilt Setpoint", tiltController.getSetpoint());
   }
 }

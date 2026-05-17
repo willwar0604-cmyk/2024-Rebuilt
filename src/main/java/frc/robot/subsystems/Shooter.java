@@ -49,12 +49,10 @@ public class Shooter extends SubsystemBase {
         shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  LoggedNetworkNumber shooterRPM = new LoggedNetworkNumber("Shooter/Shooter RPM/RPM", 2500);
-
-  public Command shoot() {
+  public Command shoot(double RPM) {
     return run(() -> {
-          topShooterController.setSetpoint(shooterRPM.get(), ControlType.kVelocity);
-          bottomShooterController.setSetpoint(-shooterRPM.get(), ControlType.kVelocity);
+          topShooterController.setSetpoint(RPM, ControlType.kVelocity);
+          bottomShooterController.setSetpoint(RPM, ControlType.kVelocity);
         })
         .finallyDo(() -> stop());
   }
@@ -65,7 +63,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean isUpToSpeed() {
-    return Math.abs(topShooter.getEncoder().getVelocity() - shooterRPM.get()) <= 50;
+    return Math.abs(topShooter.getEncoder().getVelocity() - topShooterController.getSetpoint()) <= 50;
   }
 
   @Override
@@ -75,6 +73,6 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput(
         "Shooter/Shooter Current RPM/Bottom RPM", bottomShooter.getEncoder().getVelocity());
 
-    Logger.recordOutput("Shooter/Shooter Up to Speed", isUpToSpeed());
+    Logger.recordOutput("Shooter/Shooter Is Up To Speed", isUpToSpeed());
   }
 }
