@@ -41,7 +41,6 @@ public class Constants {
     public static final double GRAVITATIONAL_CONSTANT = 9.8; // m/s
     // NEEDS TO BE CHECKED
     public static final double INITIAL_HEIGHT = Units.inchesToMeters(0);
-    public static final double WHEEL_DIAMETER = Units.inchesToMeters(2.0);
   }
 
   public static class ClimbConstants {

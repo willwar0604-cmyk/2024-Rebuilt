@@ -114,7 +114,8 @@ public class RobotContainer {
     // Pathplanner named commands
     NamedCommands.registerCommand("runShooter", shooter.shoot(() -> 2500.0));
     NamedCommands.registerCommand("runIntake", intake.intake());
-    NamedCommands.registerCommand("Feed", intake.feed().onlyWhile(() -> shooter.isUpToSpeed()));
+    NamedCommands.registerCommand(
+        "Feed", intake.feed().onlyWhile(() -> shooter.isUpToSpeed()).withTimeout(0.5));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -160,8 +161,8 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
+                () -> controller.getLeftY(),
+                () -> controller.getLeftX(),
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed

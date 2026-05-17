@@ -56,13 +56,13 @@ public class Tilt extends SubsystemBase {
   @Override
   public void periodic() {
 
-    // if ((tiltEncoder.getRaw() * 360) >= 40) {
-    //   tiltController.setSetpoint(40, ControlType.kPosition);
-    // }
+    if ((tiltEncoder.getRaw() * 360) >= 40) {
+      tiltController.setSetpoint(40, ControlType.kPosition);
+    }
 
-    // if ((tiltEncoder.getRaw() * 360) <= 10) {
-    //   tiltController.setSetpoint(10, ControlType.kPosition);
-    // }
+    if ((tiltEncoder.getRaw() * 360) <= 10) {
+      tiltController.setSetpoint(10, ControlType.kPosition);
+    }
 
     Logger.recordOutput("Tilt/Tilt Current Rotation", tiltEncoder.get());
     Logger.recordOutput("Tilt/Tilt Current Raw Angle", tiltEncoder.getRaw() * 360);

@@ -15,15 +15,26 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AutoMath;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class AutoTarget extends SequentialCommandGroup {
+
+  LoggedNetworkNumber shooterMultiplier =
+      new LoggedNetworkNumber("Shooter/Shooter Auto Multiplier", 100);
+
   public AutoTarget(
       Drive drive, Shooter shooter, Tilt tilt, Intake intake, CommandXboxController controller) {
     Supplier<Double> shooterSpeed =
-        () -> AutoMath.getFuelSpeedToTarget(drive.getPose(), HUB_POSITION);
+        () ->
+            shooterMultiplier.get() * AutoMath.getFuelSpeedToTarget(drive.getPose(), HUB_POSITION);
+
+    Supplier<Double> correctedShooterSpeed = () -> Math.min(2500.0, shooterSpeed.get());
 
     Supplier<Rotation2d> targetYaw =
         () -> AutoMath.getRobotAngleToTarget(drive.getPose(), HUB_POSITION.toPose2d());
+
+    Supplier<Rotation2d> flippedTargetYaw =
+        () -> Rotation2d.fromDegrees(targetYaw.get().getDegrees() + 180);
 
     Supplier<Double> correctedRobotYaw =
         () ->
@@ -36,20 +47,20 @@ public class AutoTarget extends SequentialCommandGroup {
         () ->
             Math.abs(
                 DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red
-                    ? flipAngle(targetYaw.get().getDegrees())
-                    : targetYaw.get().getDegrees());
+                    ? targetYaw.get().getDegrees()
+                    : flipAngle(targetYaw.get().getDegrees()));
 
     Supplier<Double> yawError = () -> correctedTargetYaw.get() - correctedRobotYaw.get();
 
     addCommands(
         new ParallelCommandGroup(
                 tilt.manualTilt(() -> 40.0),
-                shooter.shoot(() -> shooterSpeed.get()),
+                shooter.shoot(() -> correctedShooterSpeed.get()),
                 DriveCommands.joystickDriveAtAngle(
                     drive,
-                    () -> -controller.getLeftY(),
-                    () -> -controller.getLeftX(),
-                    () -> targetYaw.get()),
+                    () -> controller.getLeftY(),
+                    () -> controller.getLeftX(),
+                    () -> flippedTargetYaw.get()),
                 Commands.run(
                     () -> {
                       Logger.recordOutput("Targeting/Robot Yaw", correctedRobotYaw.get());
@@ -59,13 +70,13 @@ public class AutoTarget extends SequentialCommandGroup {
             .until(
                 () -> (shooter.isUpToSpeed() && yawError.get() <= RobotConstants.ROTATION_ERROR)),
         new ParallelCommandGroup(
-            shooter.shoot(() -> shooterSpeed.get()),
+            shooter.shoot(() -> correctedShooterSpeed.get()),
             intake.feed().onlyWhile(() -> shooter.isUpToSpeed()),
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> targetYaw.get())));
+                () -> controller.getLeftY(),
+                () -> controller.getLeftX(),
+                () -> flippedTargetYaw.get())));
   }
 
   public static double flipAngle(double angle) {

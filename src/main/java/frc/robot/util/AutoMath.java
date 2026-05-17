@@ -46,9 +46,10 @@ public class AutoMath {
   public static double getFuelSpeedToTarget(Pose2d robotPose, Pose3d target) {
     double dist = getDistanceToTarget(robotPose, target.toPose2d());
     double heightDiff = target.getZ() - INITIAL_HEIGHT;
-    return Math.sqrt(
-        (GRAVITATIONAL_CONSTANT * (dist * dist))
-            / (LAUNCH_ANGLE_COS * (Math.tan(LAUNCH_ANGLE) * dist - heightDiff)));
+    return Math.abs(
+        -Math.sqrt(
+            (GRAVITATIONAL_CONSTANT * (dist * dist))
+                / (LAUNCH_ANGLE_COS * (Math.tan(LAUNCH_ANGLE) * dist - heightDiff))));
   }
 
   public static Pose2d flipRed(Pose2d point) {

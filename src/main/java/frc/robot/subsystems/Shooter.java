@@ -75,6 +75,8 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput(
         "Shooter/Shooter Current RPM/Bottom RPM", bottomShooter.getEncoder().getVelocity());
 
+    Logger.recordOutput("Shooter/Shooter RPM Setpoint", topShooterController.getSetpoint());
+
     Logger.recordOutput("Shooter/Shooter Is Up To Speed", isUpToSpeed());
   }
 }
