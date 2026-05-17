@@ -52,7 +52,7 @@ public class Tilt extends SubsystemBase {
   public Command manualTilt(Supplier<Double> manualAngle) {
     return joystickTilt(() -> manualAngle.get() - (tiltEncoder.getRaw() * 360));
   }
-  
+
   public boolean isAtTargetAngle() {
     return Math.abs((tiltEncoder.getRaw() * 360) - tiltController.getSetpoint()) <= .5;
   }

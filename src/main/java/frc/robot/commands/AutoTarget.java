@@ -5,7 +5,6 @@ import static frc.robot.Constants.FieldConstants.HUB_POSITION;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -14,7 +13,6 @@ import frc.robot.subsystems.*;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AutoMath;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class AutoTarget extends SequentialCommandGroup {
@@ -51,23 +49,25 @@ public class AutoTarget extends SequentialCommandGroup {
 
     addCommands(
         new ParallelCommandGroup(
-                tilt.manualTilt(() -> 40.0),
-                shooter.shoot(() -> correctedShooterSpeed.get()),
-                DriveCommands.joystickDriveAtAngle(
+            tilt.manualTilt(() -> 40.0),
+            shooter.shoot(() -> correctedShooterSpeed.get()),
+            DriveCommands.joystickDriveAtAngle(
                     drive,
                     () -> controller.getLeftY(),
                     () -> controller.getLeftX(),
                     () -> targetYaw.get())
-            .until(
-                () -> (tilt.isAtTargetAngle() && shooter.isUpToSpeed() && yawError.get() <= RobotConstants.ROTATION_ERROR)),
+                .until(
+                    () ->
+                        (tilt.isAtTargetAngle()
+                            && shooter.isUpToSpeed()
+                            && yawError.get() <= RobotConstants.ROTATION_ERROR))),
         new ParallelCommandGroup(
-            shooter.shoot(() -> correctedShooterSpeed.get()),
             intake.feed(),
             DriveCommands.joystickDriveAtAngle(
                 drive,
                 () -> controller.getLeftY(),
                 () -> controller.getLeftX(),
-                () -> targetYaw.get()))));
+                () -> targetYaw.get())));
   }
 
   public static double flipAngle(double angle) {
