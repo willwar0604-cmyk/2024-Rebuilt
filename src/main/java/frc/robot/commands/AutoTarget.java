@@ -33,9 +33,6 @@ public class AutoTarget extends SequentialCommandGroup {
     Supplier<Rotation2d> targetYaw =
         () -> AutoMath.getRobotAngleToTarget(drive.getPose(), HUB_POSITION.toPose2d());
 
-    Supplier<Rotation2d> flippedTargetYaw =
-        () -> Rotation2d.fromDegrees(targetYaw.get().getDegrees() + 180);
-
     Supplier<Double> correctedRobotYaw =
         () ->
             (Math.abs(
@@ -60,7 +57,7 @@ public class AutoTarget extends SequentialCommandGroup {
                     drive,
                     () -> controller.getLeftY(),
                     () -> controller.getLeftX(),
-                    () -> flippedTargetYaw.get()),
+                    () -> targetYaw.get()),
                 Commands.run(
                     () -> {
                       Logger.recordOutput("Targeting/Robot Yaw", correctedRobotYaw.get());
@@ -76,7 +73,7 @@ public class AutoTarget extends SequentialCommandGroup {
                 drive,
                 () -> controller.getLeftY(),
                 () -> controller.getLeftX(),
-                () -> flippedTargetYaw.get())));
+                () -> targetYaw.get())));
   }
 
   public static double flipAngle(double angle) {

@@ -30,7 +30,7 @@ public class AutoMath {
 
     return new Rotation2d(
         Math.atan(b / a)
-            + ((DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) ? 0 : Math.PI));
+            + ((DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) ? Math.PI : 0));
   }
 
   public static double getDistanceToTarget(Pose2d robotPose, Pose2d target) {
