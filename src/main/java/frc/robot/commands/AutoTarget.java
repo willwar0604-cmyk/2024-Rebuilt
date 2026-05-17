@@ -57,23 +57,17 @@ public class AutoTarget extends SequentialCommandGroup {
                     drive,
                     () -> controller.getLeftY(),
                     () -> controller.getLeftX(),
-                    () -> targetYaw.get()),
-                Commands.run(
-                    () -> {
-                      Logger.recordOutput("Targeting/Robot Yaw", correctedRobotYaw.get());
-                      Logger.recordOutput("Targeting/Target Yaw", correctedTargetYaw.get());
-                      Logger.recordOutput("Targeting/Angle Yaw", yawError.get());
-                    }))
+                    () -> targetYaw.get())
             .until(
-                () -> (shooter.isUpToSpeed() && yawError.get() <= RobotConstants.ROTATION_ERROR)),
+                () -> (tilt.isAtTargetAngle() && shooter.isUpToSpeed() && yawError.get() <= RobotConstants.ROTATION_ERROR)),
         new ParallelCommandGroup(
             shooter.shoot(() -> correctedShooterSpeed.get()),
-            intake.feed().onlyWhile(() -> shooter.isUpToSpeed()),
+            intake.feed(),
             DriveCommands.joystickDriveAtAngle(
                 drive,
                 () -> controller.getLeftY(),
                 () -> controller.getLeftX(),
-                () -> targetYaw.get())));
+                () -> targetYaw.get()))));
   }
 
   public static double flipAngle(double angle) {

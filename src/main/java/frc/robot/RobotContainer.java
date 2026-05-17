@@ -194,7 +194,7 @@ public class RobotContainer {
     // Tilts with right joystick Y while right bumper is held
     controller.rightBumper().whileTrue(tilt.joystickTilt(() -> controller.getRightY()));
 
-    // AutoTargets with d-pad up (MAYBE)
+    // AutoTargets with d-pad up
     controller.povUp().toggleOnTrue(new AutoTarget(drive, shooter, tilt, intake, controller));
   }
 
