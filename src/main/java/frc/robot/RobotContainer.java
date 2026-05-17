@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -111,7 +112,7 @@ public class RobotContainer {
     }
 
     // Pathplanner named commands
-    NamedCommands.registerCommand("runShooter", shooter.shoot(2500));
+    NamedCommands.registerCommand("runShooter", shooter.shoot(() -> 2500.0));
     NamedCommands.registerCommand("runIntake", intake.intake());
     NamedCommands.registerCommand("Feed", intake.feed().onlyWhile(() -> shooter.isUpToSpeed()));
 
@@ -179,18 +180,21 @@ public class RobotContainer {
 
     // Intakes with left trigger and moves the tilt down to stop pop-out
     controller.leftTrigger().whileTrue(intake.intake());
-    controller.leftTrigger().whileTrue(tilt.manualTilt(10.0));
+    controller.leftTrigger().whileTrue(tilt.manualTilt(() -> 10.0));
 
     // Dumps intake with left bumper
     controller.leftBumper().whileTrue(intake.dump());
-    controller.leftBumper().whileTrue(tilt.manualTilt(10.0));
+    controller.leftBumper().whileTrue(tilt.manualTilt(() -> 10.0));
 
     // Shoots with right trigger
-    controller.rightTrigger().whileTrue(shooter.shoot(2500));
+    controller.rightTrigger().whileTrue(shooter.shoot(() -> 2500.0));
     controller.rightTrigger().and(() -> shooter.isUpToSpeed()).whileTrue(intake.feed());
 
     // Tilts with right joystick Y while right bumper is held
     controller.rightBumper().whileTrue(tilt.joystickTilt(() -> controller.getRightY()));
+
+    // AutoTargets with d-pad up (MAYBE)
+    controller.povUp().toggleOnTrue(new AutoTarget(drive, shooter, tilt, intake, controller));
   }
 
   /**
@@ -199,6 +203,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return new PathfindToStart(new PathPlannerAuto(autoChooser.get().getName()));
   }
 }

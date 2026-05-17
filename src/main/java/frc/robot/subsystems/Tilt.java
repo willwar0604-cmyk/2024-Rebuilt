@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TiltConstants;
 import frc.robot.VectorKit.hardware.AbsoluteEncoder;
-import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -41,17 +41,16 @@ public class Tilt extends SubsystemBase {
     return Math.max(10.0, Math.min(40.0, unclampedAngle));
   }
 
-  public Command joystickTilt(DoubleSupplier deltaAngle) {
+  public Command joystickTilt(Supplier<Double> deltaAngle) {
     return run(
         () -> {
           tiltController.setSetpoint(
-              clampedAngle((tiltEncoder.getRaw() * 360) + deltaAngle.getAsDouble()),
-              ControlType.kPosition);
+              clampedAngle((tiltEncoder.getRaw() * 360) + deltaAngle.get()), ControlType.kPosition);
         });
   }
 
-  public Command manualTilt(double manualAngle) {
-    return joystickTilt(() -> manualAngle - (tiltEncoder.getRaw() * 360));
+  public Command manualTilt(Supplier<Double> manualAngle) {
+    return joystickTilt(() -> manualAngle.get() - (tiltEncoder.getRaw() * 360));
   }
 
   @Override

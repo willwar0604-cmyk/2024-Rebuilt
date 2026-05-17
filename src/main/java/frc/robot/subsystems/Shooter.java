@@ -10,6 +10,7 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -49,10 +50,10 @@ public class Shooter extends SubsystemBase {
         shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  public Command shoot(double RPM) {
+  public Command shoot(Supplier<Double> RPM) {
     return run(() -> {
-          topShooterController.setSetpoint(RPM, ControlType.kVelocity);
-          bottomShooterController.setSetpoint(RPM, ControlType.kVelocity);
+          topShooterController.setSetpoint(RPM.get(), ControlType.kVelocity);
+          bottomShooterController.setSetpoint(RPM.get(), ControlType.kVelocity);
         })
         .finallyDo(() -> stop());
   }
@@ -63,7 +64,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean isUpToSpeed() {
-    return Math.abs(topShooter.getEncoder().getVelocity() - topShooterController.getSetpoint()) <= 50;
+    return Math.abs(topShooter.getEncoder().getVelocity() - topShooterController.getSetpoint())
+        <= 50;
   }
 
   @Override

@@ -27,13 +27,21 @@ public class Constants {
 
   public static class TiltConstants {
     public static final int TILT = 44;
+
+    public static final double LAUNCH_ANGLE = Units.degreesToRadians(40);
+    public static final double LAUNCH_ANGLE_COS = 2 * Math.pow(Math.cos(LAUNCH_ANGLE), 2);
   }
 
   public static class ShooterConstants {
     public static final int TOP_SHOOTER = 42;
     public static final int BOTTOM_SHOOTER = 41;
 
+    public static final double MAX_RPM = 6000.0;
+
     public static final double GRAVITATIONAL_CONSTANT = 9.8; // m/s
+    // NEEDS TO BE CHECKED
+    public static final double INITIAL_HEIGHT = Units.inchesToMeters(0);
+    public static final double WHEEL_DIAMETER = Units.inchesToMeters(2.0);
   }
 
   public static class ClimbConstants {
@@ -111,5 +119,9 @@ public class Constants {
             Units.inchesToMeters(158.84),
             Units.inchesToMeters(70),
             new Rotation3d()); // Change 5.9 to 70" (2" below top of target)
+  }
+
+  public static class RobotConstants {
+    public static final double ROTATION_ERROR = 2.0;
   }
 }
